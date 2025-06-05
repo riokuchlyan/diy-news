@@ -2,7 +2,6 @@
 
 import { login, signup } from '@/app/login/actions'
 import { createClient } from '@/utils/supabase/client'
-import { redirect } from 'next/navigation'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 
