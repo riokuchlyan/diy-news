@@ -88,6 +88,14 @@ export default function LoginPage() {
             >
               Create account
             </button>
+            <a
+              href="/"
+              className="w-full flex justify-center py-2 px-4 border border-black rounded-md shadow-sm text-sm font-medium 
+                       text-black bg-white hover:bg-gray-50 
+                       focus:outline-none focus:ring-2 focus:ring-black transition-colors"
+            >
+              Home
+            </a>
           </div>
         </form>
       </div>
