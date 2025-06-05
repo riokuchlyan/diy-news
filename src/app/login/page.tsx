@@ -1,13 +1,31 @@
+'use client'
+
 import { login, signup } from '@/app/login/actions'
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/supabase/client'
 import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
-export default async function LoginPage() {
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
+export default function LoginPage() {
+  const router = useRouter()
 
-  if (user) {
-    redirect('/news-list')
+  useEffect(() => {
+    const checkUser = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        router.push('/news-list')
+      }
+    }
+    checkUser()
+  }, [router])
+
+  const handleSignup = async (formData: FormData) => {
+    const result = await signup(formData)
+    if (result?.success) {
+      alert('Please check your email for a confirmation link to complete your registration!')
+      router.push('/')
+    }
   }
 
   return (
@@ -64,7 +82,7 @@ export default async function LoginPage() {
               Sign in
             </button>
             <button
-              formAction={signup}
+              formAction={handleSignup}
               className="w-full flex justify-center py-2 px-4 border border-black rounded-md shadow-sm text-sm font-medium 
                        text-black bg-white hover:bg-gray-50 
                        focus:outline-none focus:ring-2 focus:ring-black transition-colors"
