@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
-    // Verify the request is from Vercel Cron
+
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json(
@@ -15,7 +15,6 @@ export async function GET(request: Request) {
       );
     }
 
-    // Send the newsletter
     const result = await sendNewsletter();
     return NextResponse.json(result);
   } catch (error) {

@@ -23,7 +23,6 @@ export default function NewsItem({ id, term }: NewsItemProps) {
 
       if (error) throw error
 
-      // Refresh the page to show updated list
       window.location.reload()
     } catch (error) {
       console.error('Error deleting item:', error)

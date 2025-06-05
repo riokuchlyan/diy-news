@@ -1,12 +1,10 @@
 import { sendNewsletter } from '@/services/news-letter/NewsLetter';
 import { sendEmail } from '@/utils/sendEmail';
 
-// Mock the sendEmail function
 jest.mock('@/utils/sendEmail', () => ({
   sendEmail: jest.fn()
 }));
 
-// Mock Supabase client
 jest.mock('@supabase/supabase-js', () => {
   const mockSelect = jest.fn();
   const mockFrom = jest.fn(() => ({ select: mockSelect }));
@@ -14,11 +12,10 @@ jest.mock('@supabase/supabase-js', () => {
   
   return {
     createClient: jest.fn(() => mockSupabase),
-    __mockSelect: mockSelect // Export mock for test access
+    __mockSelect: mockSelect
   };
 });
 
-// Get the mock select function for test access
 const mockSelect = (jest.requireMock('@supabase/supabase-js') as { __mockSelect: jest.Mock }).__mockSelect;
 
 describe('sendNewsletter', () => {
@@ -27,7 +24,6 @@ describe('sendNewsletter', () => {
   });
 
   it('should send emails to all users with news items', async () => {
-    // Setup mock data for success case
     mockSelect.mockResolvedValueOnce({
       data: [
         {
@@ -83,7 +79,6 @@ describe('sendNewsletter', () => {
   });
 
   it('should handle Supabase errors', async () => {
-    // Setup mock for error case
     mockSelect.mockResolvedValueOnce({
       data: null,
       error: new Error('Database error')
@@ -94,7 +89,6 @@ describe('sendNewsletter', () => {
   });
 
   it('should skip users without email or news items', async () => {
-    // Setup mock for users without email or news items
     mockSelect.mockResolvedValueOnce({
       data: [
         { email: null, news_items: [] },

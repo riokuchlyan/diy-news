@@ -16,28 +16,23 @@ export default function AddNewsItems() {
     try {
       const supabase = createClient()
       
-      // Get the current user
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      // Split the input by commas and trim whitespace
       const newsItems = newsInput.split(',').map(item => item.trim()).filter(Boolean)
 
-      // Insert each news item as a separate row
       const { error: insertError } = await supabase
         .from('userdata')
         .insert(
           newsItems.map(term => ({
             UID: user.id,
-            'news-terms': term // Each term gets its own row
+            'news-terms': term
           }))
         )
 
       if (insertError) throw insertError
 
-      // Clear the input on success
       setNewsInput('')
-      // Optionally refresh the page or update the list
       window.location.reload()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to add news items')

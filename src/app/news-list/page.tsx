@@ -12,7 +12,6 @@ export default async function NewsListPage() {
     redirect('/login')
   }
 
-  // Fetch all news items for the current user
   const { data: newsItems, error: newsError } = await supabase
     .from('userdata')
     .select('*')

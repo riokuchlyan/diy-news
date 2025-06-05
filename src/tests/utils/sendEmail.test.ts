@@ -1,6 +1,5 @@
 import { sendEmail } from '@/utils/sendEmail';
 
-// Mock fetch
 global.fetch = jest.fn();
 
 describe('sendEmail', () => {
@@ -18,10 +17,11 @@ describe('sendEmail', () => {
     const testData = {
       email: 'delivered@resend.dev',
       subject: 'Test Email',
-      data: {
-        message: 'This is a test message',
-        timestamp: new Date().toISOString()
-      }
+      data: [{
+        title: 'Test News',
+        description: 'This is a test message',
+        url: 'https://example.com'
+      }]
     };
 
     const result = await sendEmail(testData);
@@ -46,7 +46,11 @@ describe('sendEmail', () => {
     const invalidData = {
       email: 'invalid-email',
       subject: 'Test Email',
-      data: {}
+      data: [{
+        title: 'Test News',
+        description: 'Test description',
+        url: 'https://example.com'
+      }]
     };
 
     await expect(sendEmail(invalidData)).rejects.toThrow(errorMessage);
