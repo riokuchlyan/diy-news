@@ -28,7 +28,7 @@ export default function Home() {
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <h1 className="text-8xl font-bold text-center">DIY NEWS</h1>
         <p className="text-center flex justify-center">
-          One news letter for everything.
+          One newsletter for everything.
         </p>
       </main>
       <footer className="row-start-3 flex flex-col gap-[12px] items-center justify-center">
