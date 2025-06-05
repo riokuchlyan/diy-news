@@ -19,7 +19,7 @@ jest.mock('@supabase/supabase-js', () => {
 });
 
 // Get the mock select function for test access
-const mockSelect = (jest.requireMock('@supabase/supabase-js') as any).__mockSelect;
+const mockSelect = (jest.requireMock('@supabase/supabase-js') as { __mockSelect: jest.Mock }).__mockSelect;
 
 describe('sendNewsletter', () => {
   beforeEach(() => {

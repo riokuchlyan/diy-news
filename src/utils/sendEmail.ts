@@ -1,9 +1,15 @@
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+export interface NewsItem {
+  title: string;
+  description: string;
+  url: string;
+}
+
 export interface EmailParams {
   email: string;
   subject: string;
-  data: any;
+  data: NewsItem[];
 }
 
 export async function sendEmail({ email, subject, data }: EmailParams) {
