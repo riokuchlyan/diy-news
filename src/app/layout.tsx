@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DIY News",
-  description: "One news letter for everything you need to know",
+  description: "One news letter for everything you need to know.",
 };
 
 export default function RootLayout({
