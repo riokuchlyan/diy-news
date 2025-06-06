@@ -1,7 +1,12 @@
 import { type NextRequest } from 'next/server'
 import { updateSession } from '@/utils/supabase/middleware'
+import { NextResponse } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Allow requests from the Vercel deployment domain
+  if (request.headers.get('host') === 'diy-news-seven.vercel.app') {
+    return NextResponse.next()
+  }
   return await updateSession(request)
 }
 
