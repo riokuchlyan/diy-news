@@ -1,13 +1,11 @@
-'use client'
-
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/utils/supabase/server'
 import { Database } from '@/types/supabase'
 
 export type UserData = Database['public']['Tables']['userdata']['Row']
 
 export default async function getAllSupabaseData(): Promise<UserData[] | null> {
     try {
-        const supabase = createClient()
+        const supabase = await createClient()
 
         const { data, error } = await supabase
             .from('userdata')
