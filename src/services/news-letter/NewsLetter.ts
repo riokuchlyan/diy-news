@@ -3,12 +3,12 @@ import { getEmailFromUID } from "@/utils/getEmailFromUID";
 import { getNewsFromUID } from "@/utils/getNewsFromUID";
 import { sendEmail } from "@/utils/sendEmail";
 import { getOpenAIResponse } from "@/utils/getOpenAIResponse";
-//import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
+import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
     if (!data) return
-    const allUIDs = ['82f58ce4-fb01-4393-ab17-17996e397f9a','b7138fc5-d2f0-4d87-90ec-b9a2b1f1b10d']
+    const allUIDs = JSON.stringify(getAllUIDFromData(data))
 
     for (const uid of allUIDs) {
       const userNewsData = data
