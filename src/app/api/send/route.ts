@@ -7,6 +7,13 @@ export async function POST(request: Request) {
   try {
     const { email, subject, data } = await request.json();
 
+    if (!email || !subject || !data) {
+      return Response.json(
+        { error: 'Missing required fields' },
+        { status: 400 }
+      );
+    }
+
     const { data: responseData, error } = await resend.emails.send({
       from: 'DIY News <onboarding@resend.dev>',
       to: [email],
@@ -15,11 +22,16 @@ export async function POST(request: Request) {
     });
 
     if (error) {
+      console.error('Error sending email:', error);
       return Response.json({ error }, { status: 500 });
     }
 
     return Response.json(responseData);
   } catch (error) {
-    return Response.json({ error }, { status: 500 });
+    console.error('Unexpected error in send API:', error);
+    return Response.json(
+      { error: 'Internal server error' },
+      { status: 500 }
+    );
   }
 }
