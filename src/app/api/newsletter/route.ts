@@ -1,14 +1,16 @@
 import { NextResponse } from 'next/server';
-import { sendNewsletter } from '@/services/news-letter/NewsLetter';
+//import { sendNewsletter } from '@/services/news-letter/NewsLetter';
+import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter';
 
 export async function POST(request: Request) {
   try {
-    const authHeader = request.headers.get('authorization');
-    if (authHeader !== `Bearer ${process.env.NEWSLETTER_API_KEY}`) {
+    const apiKey = request.headers.get('x-api-key');
+    if (!apiKey || apiKey !== process.env.API_SECRET_KEY) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    await sendNewsletter();
+    //await sendNewsletter();
+    await sendNewsletterToTestUser();
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Newsletter API error:', error);

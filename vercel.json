@@ -1,6 +1,9 @@
 {
   "crons": [{
-    "path": "/api/cron/newsletter",
-    "schedule": "0 13 * * *"
+    "path": "/api/newsletter",
+    "schedule": "0 13 * * *",
+    "headers": {
+      "x-api-key": "${API_SECRET_KEY}"
+    }
   }]
 } 
