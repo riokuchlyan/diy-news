@@ -68,7 +68,14 @@ export async function sendNewsletter() {
                 return `${item}\n\n${summary}`;
             } catch (error) {
                 console.error(`Error getting summary for "${item}":`, error);
-                return `${item}\n\nFailed to generate summary.`;
+                if (error instanceof Error) {
+                    if (error.message.includes('Failed to get OpenAI response')) {
+                        return `${item}\n\nFailed to generate summary: OpenAI API error.`;
+                    } else if (error.message.includes('News API error')) {
+                        return `${item}\n\nFailed to generate summary: News API error.`;
+                    }
+                }
+                return `${item}\n\nFailed to generate summary: Unknown error.`;
             }
         })
     );

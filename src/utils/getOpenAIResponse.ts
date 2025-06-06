@@ -9,7 +9,7 @@ export async function getOpenAIResponse(prompt: string) {
     });
 
     if (!response.ok) {
-        throw new Error('Failed to get OpenAI response');
+        throw new Error('Failed to get OpenAI response: ' + response.statusText);
     }
 
     const data = await response.json();
