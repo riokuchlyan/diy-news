@@ -11,7 +11,7 @@ export async function sendNewsletter() {
     const allUIDs = getAllUIDFromData(data)
 
     // Send newsletter to all users
-    
+    /*
     for (const uid of allUIDs) {
       const userNewsData = data
       .filter(user => user.UID === uid)
@@ -40,10 +40,10 @@ export async function sendNewsletter() {
           data: newsWithSummaries
       })
     }
-    
+    */
 
     // Send newsletter to a test user
-    /*
+    
 
     interface UserData {
     UID: string;
@@ -78,6 +78,6 @@ export async function sendNewsletter() {
         subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
         data: newsWithSummaries
     })
-        */
+        
     
 }
