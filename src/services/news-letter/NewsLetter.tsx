@@ -3,7 +3,7 @@ import { getEmailFromUID } from "@/utils/getEmailFromUID";
 import { getNewsFromUID } from "@/utils/getNewsFromUID";
 import { sendEmail } from "@/utils/sendEmail";
 import { getParsedNews } from "@/utils/getParsedNews";
-import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
+//import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
