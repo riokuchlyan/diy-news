@@ -3,15 +3,15 @@ import { getEmailFromUID } from "@/utils/getEmailFromUID";
 import { getNewsFromUID } from "@/utils/getNewsFromUID";
 import { sendEmail } from "@/utils/sendEmail";
 import { getParsedNews } from "@/utils/getParsedNews";
-//import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
+import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
     if (!data) return
-    //const allUIDs = getAllUIDFromData(data)
+    const allUIDs = getAllUIDFromData(data)
 
     // Send newsletter to all users
-    /*
+    
     for (const uid of allUIDs) {
       const userNewsData = data
       .filter(user => user.UID === uid)
@@ -40,11 +40,10 @@ export async function sendNewsletter() {
           data: newsWithSummaries
       })
     }
-    */
 
     // Send newsletter to a test user
-    
-
+    /*
+/*
     interface UserData {
     UID: string;
     'news-terms': string;
@@ -86,5 +85,5 @@ export async function sendNewsletter() {
         data: newsWithSummaries
     })
         
-    
+    */
 }
