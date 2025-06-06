@@ -3,6 +3,14 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { validateApiRequest, isPublicApiRoute } from '../api-middleware'
 
 export async function updateSession(request: NextRequest) {
+  // Check if this is a Vercel cron request
+  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
+    const isVercelCron = request.headers.get('x-vercel-cron') === '1';
+    if (isVercelCron) {
+      return NextResponse.next();
+    }
+  }
+
   // Check if this is a public API route that needs API key validation
   if (isPublicApiRoute(request.nextUrl.pathname)) {
     const validationResponse = await validateApiRequest(request)
