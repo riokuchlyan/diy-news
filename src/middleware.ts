@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 export async function middleware(request: NextRequest) {
   // Allow requests from the Vercel deployment domain and localhost
   const host = request.headers.get('host')
-  if (host === 'diy-news-seven.vercel.app' || host === 'localhost:3000') {
+  if (host === process.env.HOST_URL) {
     return NextResponse.next()
   }
   return await updateSession(request)
