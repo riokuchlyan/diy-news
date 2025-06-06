@@ -3,8 +3,8 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { validateApiRequest, isPublicApiRoute } from '../api-middleware'
 
 export async function updateSession(request: NextRequest) {
-  // Immediately allow Vercel cron requests
-  if (request.headers.get('x-vercel-cron') === '1') {
+  // Allow cron route without any checks
+  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
     return NextResponse.next();
   }
 
