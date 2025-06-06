@@ -47,6 +47,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/login') &&
     !request.nextUrl.pathname.startsWith('/auth') &&
     !request.nextUrl.pathname.startsWith('/api/send') && // Allow /api/send route
+    !request.nextUrl.pathname.startsWith('/api/openai') && // Allow /api/openai route
     request.nextUrl.pathname !== '/' &&  // Allow root page
     !request.nextUrl.pathname.startsWith('/public') // Allow other public routes if needed
   ) {
