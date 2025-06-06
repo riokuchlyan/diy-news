@@ -15,8 +15,8 @@ export async function sendNewsletter() {
       .filter(user => user.UID === uid)
       .map(user => user['news-terms'])
   if (!userNewsData) return
-  const email = await getEmailFromUID(data[0].UID)
-  const news = await getNewsFromUID(data[0].UID)
+  const email = await getEmailFromUID(uid)
+  const news = await getNewsFromUID(uid)
   if (!news) return
 
   // Pre-fetch OpenAI responses for each news item
