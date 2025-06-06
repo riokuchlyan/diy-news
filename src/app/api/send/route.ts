@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     }
 
     const { data: responseData, error } = await resend.emails.send({
-      from: 'DIY News <news@riokuchlyan.com>',
+      from: `DIY News <${process.env.EMAIL_FROM}>`,
       to: [email],
       subject,
       react: await EmailTemplate({ newsItems: data }),
