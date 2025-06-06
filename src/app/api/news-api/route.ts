@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
-    const query = request.nextUrl.searchParams.get('query');
+    const query = request.nextUrl.searchParams.get('query') || request.nextUrl.searchParams.get('country');
 
     if (!query) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });

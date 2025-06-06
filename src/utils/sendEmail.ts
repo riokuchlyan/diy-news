@@ -1,5 +1,3 @@
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://diy-news-seven.vercel.app';
-
 export interface NewsItem {
   title: string;
   description: string;
@@ -13,7 +11,7 @@ export interface EmailParams {
 }
 
 export async function sendEmail({ email, subject, data }: EmailParams) {
-  const response = await fetch(`${API_BASE_URL}/api/send`, {
+  const response = await fetch(`${process.env.HOST_URL}/api/send`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

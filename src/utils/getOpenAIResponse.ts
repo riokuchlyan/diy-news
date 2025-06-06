@@ -1,6 +1,6 @@
 export async function getOpenAIResponse(prompt: string) {
 
-    const response = await fetch(`http://diy-news-seven.vercel.app/api/openai`, {
+    const response = await fetch(`${process.env.HOST_URL}/api/openai`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
