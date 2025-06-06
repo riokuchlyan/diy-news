@@ -1,18 +1,15 @@
+import { sendNewsletter } from '@/services/news-letter/NewsLetter'
 import getAllSupabaseData from '@/utils/getAllSupabaseData'
-import { getEmailFromUID } from '@/utils/getEmailFromUID'
-import { sendEmail } from '@/utils/sendEmail'
+import { getAllUIDFromData } from '@/utils/getAllUIDFromData'
+import { getNewsFromUID } from '@/utils/getNewsFromUID'
 
 export default async function Test() {
     const data = await getAllSupabaseData()
-    const email = await getEmailFromUID('82f58ce4-fb01-4393-ab17-17996e397f9a')
-    await sendEmail({
-        email: String(email),
-        subject: 'Test',
-        data: []
-    })
+    if (!data) return
+    const uids = getAllUIDFromData(data)
+    const news = await getNewsFromUID(uids[0])
+    sendNewsletter()
     return <div>
-        {JSON.stringify(data)}
-        <p>{email}</p>
-        
-        </div>
+        <p>{JSON.stringify(news)}</p>
+    </div>
 }

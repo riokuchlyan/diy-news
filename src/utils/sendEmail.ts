@@ -9,7 +9,7 @@ export interface NewsItem {
 export interface EmailParams {
   email: string;
   subject: string;
-  data: NewsItem[];
+  data: string[];
 }
 
 export async function sendEmail({ email, subject, data }: EmailParams) {

@@ -1,13 +1,8 @@
 import * as React from 'react';
-
-interface NewsItem {
-  title: string;
-  description: string;
-  url: string;
-}
+import { NewsSummary } from './NewsSummary';
 
 interface EmailTemplateProps {
-  newsItems: NewsItem[];
+  newsItems: string[];
 }
 
 export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
@@ -42,20 +37,12 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
           marginBottom: '10px',
           color: '#000000'
         }}>
-          {item.title}
+          {item}
         </h2>
-        <p style={{ 
-          fontSize: '16px',
-          lineHeight: '1.5',
-          marginBottom: '15px',
-          color: '#444444'
-        }}>
-          {item.description}
-        </p>
-        <a href={item.url} style={{
+        <a href={`https://news.google.com/search?q=${encodeURIComponent(item)}`} style={{
           display: 'inline-block',
           backgroundColor: '#000000',
-          color: '#ffffff',
+          color: '#cccccc',
           padding: '10px 20px',
           textDecoration: 'none',
           borderRadius: '4px',
