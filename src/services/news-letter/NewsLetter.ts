@@ -5,19 +5,8 @@ import { sendEmail } from "@/utils/sendEmail";
 import { getOpenAIResponse } from "@/utils/getOpenAIResponse";
 
 export async function sendNewsletter() {
-  /*
-    const data = await getAllSupabaseData()
-    if (!data) return
-    for (const user of data) {
-        const email = await getEmailFromUID(user.UID)
-        if (!email) continue
-        await sendEmail({
-            email: String(email),
-            subject: 'Test',
-            data: []
-        })
-    }
-        */
+  
+
     const data = await getAllSupabaseData()
     if (!data) return
     const userNewsData = data

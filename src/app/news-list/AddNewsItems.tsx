@@ -19,7 +19,11 @@ export default function AddNewsItems() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
 
-      const newsItems = newsInput.split(',').map(item => item.trim()).filter(Boolean)
+      const newsItems = newsInput
+        .split(',')
+        .map(item => item.trim())
+        .filter(Boolean)
+        .map(item => item.charAt(0).toUpperCase() + item.slice(1))
 
       const { error: insertError } = await supabase
         .from('userdata')

@@ -6,7 +6,6 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
-
     const authHeader = request.headers.get('authorization');
     if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
       return NextResponse.json(
@@ -15,8 +14,8 @@ export async function GET(request: Request) {
       );
     }
 
-    const result = await sendNewsletter();
-    return NextResponse.json(result);
+    await sendNewsletter();
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Newsletter cron job error:', error);
     return NextResponse.json(
