@@ -5,11 +5,6 @@ import { sendEmail } from "@/utils/sendEmail";
 import { getParsedNews } from "@/utils/getParsedNews";
 import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 
-interface UserData {
-    UID: string;
-    'news-terms': string;
-}
-
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
     if (!data) return
@@ -49,6 +44,12 @@ export async function sendNewsletter() {
 
     // Send newsletter to a test user
     /*
+
+    interface UserData {
+    UID: string;
+    'news-terms': string;
+    }
+
     const userNewsData = data
     const uid = "82f58ce4-fb01-4393-ab17-17996e397f9a"
     const filteredData = (data as UserData[])
