@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import { validateApiRequest, isPublicApiRoute } from '../api-middleware'
 
 export async function updateSession(request: NextRequest) {
-  // Allow cron route without any checks
+  // Allow cron route without any checks 
   if (request.nextUrl.pathname.startsWith('/api/cron/')) {
     return NextResponse.next();
   }
@@ -64,6 +64,7 @@ export async function updateSession(request: NextRequest) {
     !request.nextUrl.pathname.startsWith('/api/openai') && // Allow /api/openai route
     !request.nextUrl.pathname.startsWith('/api/news-api') && // Allow /api/news-api route
     !request.nextUrl.pathname.startsWith('/api/newsletter') && // Allow /api/newsletter route
+    !request.nextUrl.pathname.startsWith('/api/cron/') && // Allow /api/cron/ route
     request.nextUrl.pathname !== '/' &&  // Allow root page
     !request.nextUrl.pathname.startsWith('/public') // Allow other public routes if needed
   ) {
