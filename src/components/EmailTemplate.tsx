@@ -74,7 +74,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
       fontSize: '12px',
       color: '#666666'
     }}>
-      <p>This email was sent to you because you subscribed to <a href="https://diy-news-seven.vercel.app" style={{ color: '#666666', textDecoration: 'underline' }}>DIY News</a>.</p>
+      <p>This email was sent to you because you subscribed to <a href={process.env.HOST_URL} style={{ color: '#666666', textDecoration: 'underline' }}>DIY News</a>.</p>
       <p style={{ marginTop: '8px' }}>To unsubscribe, please remove all your news terms from your account.</p>
     </div>
   </div>
