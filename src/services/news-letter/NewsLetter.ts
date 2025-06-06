@@ -8,7 +8,7 @@ import { getOpenAIResponse } from "@/utils/getOpenAIResponse";
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
     if (!data) return
-    const allUIDs = ['82f58ce4-fb01-4393-ab17-17996e397f9a', 'b2b67f77-3ae0-4e5d-b3f5-5b2a7eb9aab8']
+    const allUIDs = ['b2b67f77-3ae0-4e5d-b3f5-5b2a7eb9aab8']
 
     for (const uid of allUIDs) {
       const userNewsData = data
