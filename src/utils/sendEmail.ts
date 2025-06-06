@@ -15,6 +15,7 @@ export async function sendEmail({ email, subject, data }: EmailParams) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      'x-api-key': process.env.API_SECRET_KEY!
     },
     body: JSON.stringify({
       email,

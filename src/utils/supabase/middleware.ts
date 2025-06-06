@@ -1,7 +1,16 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { validateApiRequest, isPublicApiRoute } from '../api-middleware'
 
 export async function updateSession(request: NextRequest) {
+  // Check if this is a public API route that needs API key validation
+  if (isPublicApiRoute(request.nextUrl.pathname)) {
+    const validationResponse = await validateApiRequest(request)
+    if (validationResponse) {
+      return validationResponse
+    }
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
