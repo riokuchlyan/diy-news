@@ -8,7 +8,7 @@ import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 export async function sendNewsletter() {
     const data = await getAllSupabaseData()
     if (!data) return
-    const allUIDs = getAllUIDFromData(data)
+    //const allUIDs = getAllUIDFromData(data)
 
     // Send newsletter to all users
     /*
@@ -50,7 +50,7 @@ export async function sendNewsletter() {
     'news-terms': string;
     }
 
-    const userNewsData = data
+    //const userNewsData = data
     const uid = "82f58ce4-fb01-4393-ab17-17996e397f9a"
     const filteredData = (data as UserData[])
       .filter((user: UserData) => user.UID === uid)
