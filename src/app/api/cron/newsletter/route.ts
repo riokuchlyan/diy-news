@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter';
 
-export async function GET(request: Request) {
+export async function GET() {
   try {
     await sendNewsletterToTestUser();
     return NextResponse.json({ success: true });
