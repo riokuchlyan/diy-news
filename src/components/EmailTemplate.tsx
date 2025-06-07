@@ -75,7 +75,7 @@ export const EmailTemplate: React.FC<Readonly<EmailTemplateProps>> = ({
       color: '#666666'
     }}>
       <p>This email was sent to you because you subscribed to <a href={process.env.HOST_URL} style={{ color: '#666666', textDecoration: 'underline' }}>DIY News</a>.</p>
-      <p style={{ marginTop: '8px' }}>To unsubscribe, please remove all your news terms from your account.</p>
+      <p style={{ marginTop: '8px' }}>To edit your list or unsubscribe, please do so from your account.</p>
     </div>
   </div>
 );
