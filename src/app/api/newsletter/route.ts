@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendNewsletter } from '@/services/news-letter/NewsLetter';
-//import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter';
+//import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter'; // for testing
 
 export async function POST(request: Request) {
   try {
@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     }
 
     await sendNewsletter();
-    //await sendNewsletterToTestUser();
+    //await sendNewsletterToTestUser(); // for testing
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Newsletter API error:', error);
