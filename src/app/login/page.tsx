@@ -73,6 +73,7 @@ export default function LoginPage() {
             </div>
           </div>
           <div className="flex flex-col space-y-3">
+            <div className="flex flex-row space-x-3">
             <button
               formAction={login}
               className="w-full flex justify-center py-2 px-4 border border-black rounded-md shadow-sm text-sm font-medium 
@@ -89,6 +90,8 @@ export default function LoginPage() {
             >
               Create account
             </button>
+            </div>
+            
             <Link
               href="/"
               className="w-full flex justify-center py-2 px-4 border border-black rounded-md shadow-sm text-sm font-medium 
