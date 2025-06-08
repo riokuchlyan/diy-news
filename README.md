@@ -115,22 +115,6 @@ src/
 - API_SECRET_KEY: Internal API security
 - HOST_URL: Application base URL
 
-## Installation and Setup
-1. Clone repository (authorized users only)
-2. Install dependencies: `npm install`
-3. Configure environment variables
-4. Set up Supabase database schema
-5. Configure news API access
-6. Set up email templates
-7. Deploy to production environment
-
-## Testing
-- Comprehensive test suite with 155+ tests
-- Unit tests for all utilities and services
-- API route testing
-- Validation system testing
-- Security vulnerability testing
-
 ## Benefits
 - Reduce email clutter by consolidating multiple newsletters
 - Save time by reading one comprehensive digest
