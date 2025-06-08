@@ -1,4 +1,9 @@
-export async function getOpenAIResponse(prompt: string) {
+export async function getOpenAIResponse(prompt: string, query?: string) {
+
+    const requestBody: { prompt: string; query?: string } = { prompt };
+    if (query) {
+        requestBody.query = query;
+    }
 
     const response = await fetch(`${process.env.HOST_URL}/api/openai`, {
         method: 'POST',
@@ -6,7 +11,7 @@ export async function getOpenAIResponse(prompt: string) {
             'Content-Type': 'application/json',
             'x-api-key': process.env.API_SECRET_KEY!
         },
-        body: JSON.stringify({ prompt }),
+        body: JSON.stringify(requestBody),
     });
 
     if (!response.ok) {
