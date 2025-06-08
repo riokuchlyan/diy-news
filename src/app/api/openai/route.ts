@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     systemPrompt += ` Pay special attention and only include to information related to: "${query.trim()}" which is the main news topic you are covering.`;
   }
   
-  systemPrompt += ` IMPORTANT: Only include information from this raw data. Focus on the most recent facts, figures, and implications. The response must be a single paragraph with no line breaks, no special characters, and no formatting. ALSO IMPORTANT: Only include crucial news and headlines and breaking news or anything you deem important in your message, ignoring superficial news. Do not include source attribution. Ensure your response is 100 words or less. If the topic is too vague or you cannot find recent information, find something in the data you are given and state it. Under no circumstances should you hallucinate or make up information.`;
+  systemPrompt += ` IMPORTANT: Only include information from this raw data. Focus on the most recent facts, figures, and implications. The response must be a single paragraph with no line breaks, no special characters, and no formatting. ALSO IMPORTANT: Only include crucial news and headlines and breaking news or anything you deem important in your message, ignoring superficial news. Do not include source attribution. Ensure your response is 100 words or less. If the topic is too vague or you cannot find recent information, find something in the data you are given and state it, but do not state that you cannot find any information because you are delivering it to a user. Under no circumstances should you hallucinate or make up information.`;
 
   const response = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
