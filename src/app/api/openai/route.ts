@@ -7,7 +7,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
   }
 
-  // Create a focused system prompt that incorporates the query if provided
   let systemPrompt = `You are a professional news analyst. Your task is to provide a single paragraph of exactly 100 words summarizing ONLY THE MOST RECENT developments regarding this raw news data:"${prompt}".`;
   
   if (query && query.trim()) {

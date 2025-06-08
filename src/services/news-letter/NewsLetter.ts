@@ -23,7 +23,6 @@ export async function sendNewsletterToTestUser() {
         const news = await getNewsFromUID(uid)
         if (!news) return
     
-        // Pre-fetch OpenAI responses for each news item
         const newsWithSummaries = await Promise.all(
             news.map(async (item) => {
                 try {
@@ -64,7 +63,6 @@ export async function sendNewsletter() {
       const news = await getNewsFromUID(uid)
       if (!news) return
 
-      // Pre-fetch OpenAI responses for each news item
       const newsWithSummaries = await Promise.all(
           news.map(async (item) => {
               try {
