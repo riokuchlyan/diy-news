@@ -70,15 +70,33 @@ export async function sendNewsletter() {
                   return `${item}\n\n${summary}`;
               } catch (error) {
                   console.error(`Error getting summary for "${item}":`, error);
-                  return `${item}\n\nFailed to generate summary.`;
+                  if (error instanceof Error) {
+                      if (error.message.includes('No articles found')) {
+                          return `${item}\n\nNo recent articles found for this topic.`;
+                      } else if (error.message.includes('No valid news data')) {
+                          return `${item}\n\nFailed to retrieve news data.`;
+                      } else if (error.message.includes('OpenAI API returned an unexpected response format')) {
+                          return `${item}\n\nFailed to generate summary: AI service error.`;
+                      } else if (error.message.includes('Failed to get OpenAI response')) {
+                          return `${item}\n\nFailed to generate summary: OpenAI API error.`;
+                      } else if (error.message.includes('News API error')) {
+                          return `${item}\n\nFailed to generate summary: News API error.`;
+                      }
+                  }
+                  return `${item}\n\nFailed to generate summary: Unknown error.`;
               }
           })
       );
 
-      await sendEmail({
-          email: String(email),
-          subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
-          data: newsWithSummaries
-      })
+      try {
+          await sendEmail({
+              email: String(email),
+              subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
+              data: newsWithSummaries
+          })
+          console.log(`Newsletter sent successfully to ${email}`);
+      } catch (error) {
+          console.error(`Failed to send newsletter to ${email}:`, error);
+      }
     }
 }

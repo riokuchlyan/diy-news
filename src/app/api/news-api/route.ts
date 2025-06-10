@@ -7,8 +7,30 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
-    const response = await fetch(`https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=5&apiKey=${process.env.NEWS_API_KEY}`);
-    const data = await response.json();
-
-    return NextResponse.json(data);
+    try {
+        const response = await fetch(`https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=5&apiKey=${process.env.NEWS_API_KEY}`);
+        
+        if (!response.ok) {
+            console.error('NewsAPI error:', response.status, response.statusText);
+            return NextResponse.json({ 
+                error: `NewsAPI error: ${response.status} ${response.statusText}` 
+            }, { status: response.status });
+        }
+        
+        const data = await response.json();
+        
+        if (data.status === 'error') {
+            console.error('NewsAPI error:', data.code, data.message);
+            return NextResponse.json({ 
+                error: `NewsAPI error: ${data.message}` 
+            }, { status: 400 });
+        }
+        
+        return NextResponse.json(data);
+    } catch (error) {
+        console.error('Error calling NewsAPI:', error);
+        return NextResponse.json({ 
+            error: 'Failed to call NewsAPI' 
+        }, { status: 500 });
+    }
 }

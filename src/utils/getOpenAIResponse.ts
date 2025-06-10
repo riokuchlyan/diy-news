@@ -19,5 +19,11 @@ export async function getOpenAIResponse(prompt: string, query?: string) {
     }
 
     const data = await response.json();
+    
+    if (!data.choices || !Array.isArray(data.choices) || data.choices.length === 0) {
+        console.error('Invalid OpenAI response structure:', data);
+        throw new Error('OpenAI API returned an unexpected response format');
+    }
+    
     return data.choices[0].message.content;
 }
