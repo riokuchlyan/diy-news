@@ -10,19 +10,53 @@ interface UserData {
     'news-terms': string;
 }
 
-// Helper function to process chunks of users in parallel
-async function processUsersInChunks<T>(
+function delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// Helper function to retry failed requests 
+async function retryWithBackoff<T>(
+    fn: () => Promise<T>,
+    maxRetries: number = 3,
+    baseDelay: number = 1000
+): Promise<T> {
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+        try {
+            return await fn();
+        } catch (error) {
+            const isRateLimit = error instanceof Error && 
+                (error.message.includes('429') || error.message.includes('rate_limit_exceeded') || error.message.includes('Too many requests'));
+            
+            if (isRateLimit && attempt < maxRetries - 1) {
+                const delayTime = baseDelay * Math.pow(2, attempt); 
+                console.log(`Rate limit hit, retrying in ${delayTime}ms... (attempt ${attempt + 1}/${maxRetries})`);
+                await delay(delayTime);
+                continue;
+            }
+            throw error;
+        }
+    }
+    throw new Error('Max retries exceeded');
+}
+
+async function processUsersWithRateLimit<T>(
     items: T[],
-    chunkSize: number,
-    processor: (item: T) => Promise<void>
+    processor: (item: T) => Promise<void>,
+    delayBetweenUsers: number = 3000 
 ): Promise<void> {
-    for (let i = 0; i < items.length; i += chunkSize) {
-        const chunk = items.slice(i, i + chunkSize);
-        await Promise.all(chunk.map(processor));
+    for (let i = 0; i < items.length; i++) {
+        const item = items[i];
+        await processor(item);
+        
+        // Add delay between users (except for the last one)
+        if (i < items.length - 1) {
+            console.log(`Waiting ${delayBetweenUsers}ms before processing next user...`);
+            await delay(delayBetweenUsers);
+        }
     }
 }
 
-// Helper function to process a single user
+// Helper function to process a single user with rate limiting
 async function processUser(uid: string, data: UserData[]): Promise<void> {
     try {
         const userNewsData = data
@@ -46,36 +80,49 @@ async function processUser(uid: string, data: UserData[]): Promise<void> {
             return;
         }
 
-        // Process news items in parallel with concurrency control
-        const newsWithSummaries = await Promise.all(
-            news.map(async (item) => {
-                try {
-                    const summary = await getParsedNews(item);
-                    return `${item}\n\n${summary}`;
-                } catch (error) {
-                    console.error(`Error getting summary for "${item}" (user ${uid}):`, error);
-                    if (error instanceof Error) {
-                        if (error.message.includes('No articles found')) {
-                            return `${item}\n\nNo recent articles found for this topic.`;
-                        } else if (error.message.includes('No valid news data')) {
-                            return `${item}\n\nFailed to retrieve news data.`;
-                        } else if (error.message.includes('OpenAI API returned an unexpected response format')) {
-                            return `${item}\n\nFailed to generate summary: AI service error.`;
-                        } else if (error.message.includes('Failed to get OpenAI response')) {
-                            return `${item}\n\nFailed to generate summary: OpenAI API error.`;
-                        } else if (error.message.includes('News API error')) {
-                            return `${item}\n\nFailed to generate summary: News API error.`;
-                        }
-                    }
-                    return `${item}\n\nFailed to generate summary: Unknown error.`;
-                }
-            })
-        );
+        console.log(`Processing ${news.length} news topics for user ${uid}...`);
 
-        await sendEmail({
-            email: String(email),
-            subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
-            data: newsWithSummaries
+        // Process news items sequentially with delays to respect NewsAPI rate limits
+        const newsWithSummaries: string[] = [];
+        for (let i = 0; i < news.length; i++) {
+            const item = news[i];
+            try {
+                const summary = await retryWithBackoff(async () => {
+                    return await getParsedNews(item);
+                });
+                newsWithSummaries.push(`${item}\n\n${summary}`);
+                
+                // Add delay between news API calls (except for the last one)
+                if (i < news.length - 1) {
+                    await delay(1000); // 1 second between news API calls
+                }
+            } catch (error) {
+                console.error(`Error getting summary for "${item}" (user ${uid}):`, error);
+                if (error instanceof Error) {
+                    if (error.message.includes('No articles found')) {
+                        newsWithSummaries.push(`${item}\n\nNo recent articles found for this topic.`);
+                    } else if (error.message.includes('No valid news data')) {
+                        newsWithSummaries.push(`${item}\n\nFailed to retrieve news data.`);
+                    } else if (error.message.includes('OpenAI API returned an unexpected response format')) {
+                        newsWithSummaries.push(`${item}\n\nFailed to generate summary: AI service error.`);
+                    } else if (error.message.includes('Failed to get OpenAI response')) {
+                        newsWithSummaries.push(`${item}\n\nFailed to generate summary: OpenAI API error.`);
+                    } else if (error.message.includes('News API error') || error.message.includes('429')) {
+                        newsWithSummaries.push(`${item}\n\nFailed to generate summary: News API rate limit exceeded.`);
+                    }
+                } else {
+                    newsWithSummaries.push(`${item}\n\nFailed to generate summary: Unknown error.`);
+                }
+            }
+        }
+
+        // Send email with retry logic for rate limits
+        await retryWithBackoff(async () => {
+            await sendEmail({
+                email: String(email),
+                subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
+                data: newsWithSummaries
+            });
         });
         
         console.log(`Newsletter sent successfully to ${email} (${uid})`);
@@ -132,14 +179,13 @@ export async function sendNewsletter() {
         }
         
         const allUIDs = getAllUIDFromData(data);
-        console.log(`Processing ${allUIDs.length} users...`);
+        console.log(`Processing ${allUIDs.length} users sequentially with rate limiting...`);
         
-        // Process users in chunks of 3 to balance speed and API rate limits
-        const CHUNK_SIZE = 3;
-        await processUsersInChunks(
+        // Process users sequentially with delays to respect rate limits
+        await processUsersWithRateLimit(
             allUIDs,
-            CHUNK_SIZE,
-            (uid) => processUser(uid, data as UserData[])
+            (uid) => processUser(uid, data as UserData[]),
+            3000 // 3 seconds between users to respect email rate limits (2 req/sec = 1 req per 500ms, so 3s is safe)
         );
         
         console.log('Newsletter processing completed');
