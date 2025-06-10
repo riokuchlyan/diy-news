@@ -2,5 +2,18 @@
   "crons": [{
     "path": "/api/cron/newsletter",
     "schedule": "0 12 * * *"
-  }]
+  }, {
+    "path": "/api/cron/newsletter-test"
+  }],
+  "functions": {
+    "src/app/api/cron/newsletter/route.ts": {
+      "maxDuration": 60
+    },
+    "src/app/api/openai/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/news-api/route.ts": {
+      "maxDuration": 30
+    }
+  }
 } 

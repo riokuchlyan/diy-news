@@ -1,4 +1,4 @@
-import { sendNewsletter } from '@/services/news-letter/NewsLetter'
+import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter' // for testing
 
 export async function GET(request: Request) {
   
@@ -6,7 +6,7 @@ export async function GET(request: Request) {
 
   if (authHeader && authHeader.startsWith('Bearer ') && authHeader.slice(7) === process.env.CRON_SECRET) {
     try {
-      await sendNewsletter()
+      await sendNewsletterToTestUser() // for testing
       return new Response('Newsletter sent successfully', { status: 200 })
     } catch (error) {
       console.error('Error sending newsletter:', error)

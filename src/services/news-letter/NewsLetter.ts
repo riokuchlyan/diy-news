@@ -5,33 +5,63 @@ import { sendEmail } from "@/utils/sendEmail";
 import { getParsedNews } from "@/utils/getParsedNews";
 import { getAllUIDFromData } from "@/utils/getAllUIDFromData";
 
-export async function sendNewsletterToTestUser() {
-    const data = await getAllSupabaseData()
-    if (!data) return
-    
-    interface UserData {
-        UID: string;
-        'news-terms': string;
+interface UserData {
+    UID: string;
+    'news-terms': string;
+}
+
+// Helper function to process chunks of users in parallel
+async function processUsersInChunks<T>(
+    items: T[],
+    chunkSize: number,
+    processor: (item: T) => Promise<void>
+): Promise<void> {
+    for (let i = 0; i < items.length; i += chunkSize) {
+        const chunk = items.slice(i, i + chunkSize);
+        await Promise.all(chunk.map(processor));
+    }
+}
+
+// Helper function to process a single user
+async function processUser(uid: string, data: UserData[]): Promise<void> {
+    try {
+        const userNewsData = data
+            .filter(user => user.UID === uid)
+            .map(user => user['news-terms']);
+        
+        if (!userNewsData || userNewsData.length === 0) {
+            console.log(`No news data found for user ${uid}`);
+            return;
         }
-    
-        const uid = "82f58ce4-fb01-4393-ab17-17996e397f9a" // test user
-        const filteredData = (data as UserData[])
-          .filter((user: UserData) => user.UID === uid)
-          .map((user: UserData) => user['news-terms'])
-        if (!filteredData) return
-        const email = await getEmailFromUID(uid)
-        const news = await getNewsFromUID(uid)
-        if (!news) return
-    
+        
+        const email = await getEmailFromUID(uid);
+        if (!email) {
+            console.error(`No email found for user ${uid}`);
+            return;
+        }
+        
+        const news = await getNewsFromUID(uid);
+        if (!news || news.length === 0) {
+            console.log(`No news topics found for user ${uid}`);
+            return;
+        }
+
+        // Process news items in parallel with concurrency control
         const newsWithSummaries = await Promise.all(
             news.map(async (item) => {
                 try {
                     const summary = await getParsedNews(item);
                     return `${item}\n\n${summary}`;
                 } catch (error) {
-                    console.error(`Error getting summary for "${item}":`, error);
+                    console.error(`Error getting summary for "${item}" (user ${uid}):`, error);
                     if (error instanceof Error) {
-                        if (error.message.includes('Failed to get OpenAI response')) {
+                        if (error.message.includes('No articles found')) {
+                            return `${item}\n\nNo recent articles found for this topic.`;
+                        } else if (error.message.includes('No valid news data')) {
+                            return `${item}\n\nFailed to retrieve news data.`;
+                        } else if (error.message.includes('OpenAI API returned an unexpected response format')) {
+                            return `${item}\n\nFailed to generate summary: AI service error.`;
+                        } else if (error.message.includes('Failed to get OpenAI response')) {
                             return `${item}\n\nFailed to generate summary: OpenAI API error.`;
                         } else if (error.message.includes('News API error')) {
                             return `${item}\n\nFailed to generate summary: News API error.`;
@@ -41,62 +71,80 @@ export async function sendNewsletterToTestUser() {
                 }
             })
         );
-    
+
         await sendEmail({
             email: String(email),
             subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
             data: newsWithSummaries
+        });
+        
+        console.log(`Newsletter sent successfully to ${email} (${uid})`);
+    } catch (error) {
+        console.error(`Failed to process user ${uid}:`, error);
+    }
+}
+
+export async function sendNewsletterToTestUser() {
+    const data = await getAllSupabaseData()
+    if (!data) return
+    
+    const uid = "82f58ce4-fb01-4393-ab17-17996e397f9a" // test user
+    const filteredData = (data as UserData[])
+      .filter((user: UserData) => user.UID === uid)
+      .map((user: UserData) => user['news-terms'])
+    if (!filteredData) return
+    const email = await getEmailFromUID(uid)
+    const news = await getNewsFromUID(uid)
+    if (!news) return
+
+    const newsWithSummaries = await Promise.all(
+        news.map(async (item) => {
+            try {
+                const summary = await getParsedNews(item);
+                return `${item}\n\n${summary}`;
+            } catch (error) {
+                console.error(`Error getting summary for "${item}":`, error);
+                if (error instanceof Error) {
+                    if (error.message.includes('Failed to get OpenAI response')) {
+                        return `${item}\n\nFailed to generate summary: OpenAI API error.`;
+                    } else if (error.message.includes('News API error')) {
+                        return `${item}\n\nFailed to generate summary: News API error.`;
+                    }
+                }
+                return `${item}\n\nFailed to generate summary: Unknown error.`;
+            }
         })
+    );
+
+    await sendEmail({
+        email: String(email),
+        subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
+        data: newsWithSummaries
+    })
 }
 
 export async function sendNewsletter() {
-    const data = await getAllSupabaseData()
-    if (!data) return
-    const allUIDs = getAllUIDFromData(data)
-    
-    for (const uid of allUIDs) {
-      const userNewsData = data
-      .filter(user => user.UID === uid)
-      .map(user => user['news-terms'])
-      if (!userNewsData) return
-      const email = await getEmailFromUID(uid)
-      const news = await getNewsFromUID(uid)
-      if (!news) return
-
-      const newsWithSummaries = await Promise.all(
-          news.map(async (item) => {
-              try {
-                  const summary = await getParsedNews(item);
-                  return `${item}\n\n${summary}`;
-              } catch (error) {
-                  console.error(`Error getting summary for "${item}":`, error);
-                  if (error instanceof Error) {
-                      if (error.message.includes('No articles found')) {
-                          return `${item}\n\nNo recent articles found for this topic.`;
-                      } else if (error.message.includes('No valid news data')) {
-                          return `${item}\n\nFailed to retrieve news data.`;
-                      } else if (error.message.includes('OpenAI API returned an unexpected response format')) {
-                          return `${item}\n\nFailed to generate summary: AI service error.`;
-                      } else if (error.message.includes('Failed to get OpenAI response')) {
-                          return `${item}\n\nFailed to generate summary: OpenAI API error.`;
-                      } else if (error.message.includes('News API error')) {
-                          return `${item}\n\nFailed to generate summary: News API error.`;
-                      }
-                  }
-                  return `${item}\n\nFailed to generate summary: Unknown error.`;
-              }
-          })
-      );
-
-      try {
-          await sendEmail({
-              email: String(email),
-              subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
-              data: newsWithSummaries
-          })
-          console.log(`Newsletter sent successfully to ${email}`);
-      } catch (error) {
-          console.error(`Failed to send newsletter to ${email}:`, error);
-      }
+    try {
+        const data = await getAllSupabaseData();
+        if (!data) {
+            console.log('No data found from Supabase');
+            return;
+        }
+        
+        const allUIDs = getAllUIDFromData(data);
+        console.log(`Processing ${allUIDs.length} users...`);
+        
+        // Process users in chunks of 3 to balance speed and API rate limits
+        const CHUNK_SIZE = 3;
+        await processUsersInChunks(
+            allUIDs,
+            CHUNK_SIZE,
+            (uid) => processUser(uid, data as UserData[])
+        );
+        
+        console.log('Newsletter processing completed');
+    } catch (error) {
+        console.error('Error in sendNewsletter:', error);
+        throw error; // Re-throw to ensure proper error handling in the API route
     }
 }
