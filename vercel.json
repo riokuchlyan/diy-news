@@ -3,7 +3,8 @@
     "path": "/api/cron/newsletter",
     "schedule": "0 12 * * *"
   }, {
-    "path": "/api/cron/newsletter-test"
+    "path": "/api/cron/newsletter-test",
+    "schedule": "0 9 * * *"
   }],
   "functions": {
     "src/app/api/cron/newsletter/route.ts": {
