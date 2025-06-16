@@ -42,7 +42,7 @@ async function retryWithBackoff<T>(
 async function processUsersWithRateLimit<T>(
     items: T[],
     processor: (item: T) => Promise<void>,
-    delayBetweenUsers: number = 3000 
+    delayBetweenUsers: number = 500 
 ): Promise<void> {
     for (let i = 0; i < items.length; i++) {
         const item = items[i];
@@ -185,7 +185,7 @@ export async function sendNewsletter() {
         await processUsersWithRateLimit(
             allUIDs,
             (uid) => processUser(uid, data as UserData[]),
-            3000 // 3 seconds between users to respect email rate limits (2 req/sec = 1 req per 500ms, so 3s is safe)
+            500 // 500ms between users - respects email rate limit of 2 req/sec
         );
         
         console.log('Newsletter processing completed');
