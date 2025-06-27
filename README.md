@@ -1,4 +1,6 @@
-# DIY News
+# DIY News 
+
+[Visit DIY News](https://www.diynews.xyz/)
 
 ## Overview
 DIY News is a personalized newsletter service that consolidates multiple news sources into a single, customizable daily email. The platform aims to eliminate the need for subscribing to multiple newsletters by allowing users to specify their topics of interest and receive curated news content in one unified digest.
