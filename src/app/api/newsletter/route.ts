@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { sendNewsletter } from '@/services/news-letter/NewsLetter';
-//import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter'; // for testing
+//import { sendNewsletterToTestUser } from '@/services/news-letter/NewsLetter'; // for testing 
 
 export async function POST(request: Request) {
   try {
