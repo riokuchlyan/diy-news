@@ -1,8 +1,5 @@
 import { EmailClient } from "@azure/communication-email";
 
-const connectionString = process.env.COMMUNICATION_SERVICES_CONNECTION_STRING!;
-const client = new EmailClient(connectionString);
-
 export interface EmailParams {
   email: string;
   subject: string;
@@ -16,6 +13,9 @@ export interface NewsItem {
 }
 
 async function sendAzureEmail({ email, subject, data }: EmailParams) {
+    const connectionString = process.env.COMMUNICATION_SERVICES_CONNECTION_STRING!;
+    const client = new EmailClient(connectionString);
+    
     const emailMessage = {
         senderAddress: process.env.EMAIL_FROM!,
         content: {
