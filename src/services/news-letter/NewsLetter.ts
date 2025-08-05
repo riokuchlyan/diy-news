@@ -62,7 +62,7 @@ async function processUser(uid: string, data: UserData[]): Promise<void> {
 
         await sendEmail({
             email: String(email),
-            subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
+            subject: `DIY News: Your Daily News Digest - ${new Date().toLocaleDateString()}`,
             data: newsWithSummaries
         });
         
@@ -106,7 +106,7 @@ export async function sendNewsletterToTestUser() {
 
     await sendEmail({
         email: String(email),
-        subject: `Your Daily News Digest - ${new Date().toLocaleDateString()}`,
+        subject: `DIY News: Your Daily News Digest - ${new Date().toLocaleDateString()}`,
         data: newsWithSummaries
     })
 }
