@@ -1,4 +1,3 @@
-import { NextRequest, NextResponse } from 'next/server';
 import { EmailClient } from "@azure/communication-email";
 
 const connectionString = process.env.COMMUNICATION_SERVICES_CONNECTION_STRING!;
@@ -135,43 +134,6 @@ async function sendAzureEmail({ email, subject, data }: EmailParams) {
 
     const poller = await client.beginSend(emailMessage);
     await poller.pollUntilDone();
-}
-
-export async function POST(request: NextRequest) {
-    try {
-        const body = await request.json();
-        const { email, subject, data } = body;
-        
-        if (!email) {
-            return NextResponse.json(
-                { error: 'email is required in request body' },
-                { status: 400 }
-            );
-        }
-
-        if (!subject) {
-            return NextResponse.json(
-                { error: 'subject is required in request body' },
-                { status: 400 }
-            );
-        }
-
-        if (!data || !Array.isArray(data)) {
-            return NextResponse.json(
-                { error: 'data array is required in request body' },
-                { status: 400 }
-            );
-        }
-
-        await sendAzureEmail({ email, subject, data });
-        return NextResponse.json({ success: true, message: 'Email sent successfully' });
-    } catch (error) {
-        console.error('Error sending email:', error);
-        return NextResponse.json(
-            { error: 'Failed to send email' },
-            { status: 500 }
-        );
-    }
 }
 
 export async function sendEmail({ email, subject, data }: EmailParams) {
