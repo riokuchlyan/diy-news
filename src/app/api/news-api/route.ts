@@ -1,11 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// In-memory rate limit map: query -> last request timestamp
+const rateLimitMap: Map<string, number> = new Map();
+
 export async function GET(request: NextRequest) {
     const query = request.nextUrl.searchParams.get('query') || request.nextUrl.searchParams.get('country');
 
     if (!query) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
+
+    // Rate limiting: 1 request per second per query
+    const now = Date.now();
+    const lastRequest = rateLimitMap.get(query);
+    if (lastRequest && (now - lastRequest) < 1000) {
+        return NextResponse.json({
+            error: 'Rate limit exceeded. Please wait 1 second between requests.'
+        }, { status: 429 });
+    }
+    rateLimitMap.set(query, now);
 
     try {
         const response = await fetch(`https://newsapi.org/v2/everything?q=${query}&sortBy=publishedAt&pageSize=5&apiKey=${process.env.NEWS_API_KEY}`);
