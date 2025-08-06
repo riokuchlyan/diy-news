@@ -1,5 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+// Define the type for newsdata.io article structure
+interface NewsDataArticle {
+    title: string;
+    description: string;
+    content: string;
+    link: string;
+    pubDate: string;
+    source_name: string;
+}
+
 export async function GET(request: NextRequest) {
     const query = request.nextUrl.searchParams.get('query') || request.nextUrl.searchParams.get('country');
 
@@ -38,7 +48,7 @@ export async function GET(request: NextRequest) {
         const adaptedData = {
             status: data.status,
             totalResults: data.totalResults,
-            articles: data.results ? data.results.map((article: any) => ({
+            articles: data.results ? data.results.map((article: NewsDataArticle) => ({
                 title: article.title,
                 description: article.description,
                 content: article.content,
