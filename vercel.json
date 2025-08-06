@@ -12,9 +12,6 @@
     },
     "src/app/api/openai/route.ts": {
       "maxDuration": 30
-    },
-    "src/app/api/news-api/route.ts": {
-      "maxDuration": 30
     }
   }
 } 

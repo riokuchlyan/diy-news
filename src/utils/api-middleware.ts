@@ -22,7 +22,6 @@ export function isPublicApiRoute(pathname: string): boolean {
   return (
     pathname.startsWith('/api/send') ||
     pathname.startsWith('/api/openai') ||
-    pathname.startsWith('/api/news-api') ||
     pathname.startsWith('/api/newsletter')
   )
 } 
