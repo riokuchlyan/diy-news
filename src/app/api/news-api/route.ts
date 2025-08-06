@@ -20,7 +20,24 @@ export async function GET(request: NextRequest) {
     console.log(`Making NewsData.io request for query: "${query}"`);
 
     try {
-        const response = await fetch(`https://newsdata.io/api/1/latest?apikey=${process.env.NEWS_API_KEY}&q=${encodeURIComponent(query)}&language=en`);
+        // Ensure API key is properly encoded and use the exact format that works
+        const apiKey = process.env.NEWS_API_KEY;
+        if (!apiKey) {
+            console.error('NEWS_API_KEY environment variable is not set');
+            return NextResponse.json({ error: 'API key not configured' }, { status: 500 });
+        }
+
+        const url = `https://newsdata.io/api/1/latest?apikey=${apiKey}&q=${encodeURIComponent(query)}&language=en`;
+        console.log(`Requesting URL: ${url.replace(apiKey, '***')}`); // Log URL without exposing API key
+
+        const response = await fetch(url);
+        
+        if (response.status === 401) {
+            console.error('NewsData.io authentication failed. Check API key.');
+            return NextResponse.json({ 
+                error: 'NewsData.io authentication failed. Check API key configuration.' 
+            }, { status: 401 });
+        }
         
         if (response.status === 429) {
             console.error('NewsData.io rate limit exceeded for query:', query);
@@ -51,10 +68,10 @@ export async function GET(request: NextRequest) {
             articles: data.results ? data.results.map((article: NewsDataArticle) => ({
                 title: article.title,
                 description: article.description,
-                content: article.content,
                 url: article.link,
                 publishedAt: article.pubDate,
                 source: { name: article.source_name }
+                // Removed content field as it's only available in paid plans
             })) : []
         };
         
