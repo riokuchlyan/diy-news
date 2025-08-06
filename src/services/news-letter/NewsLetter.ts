@@ -10,6 +10,9 @@ interface UserData {
     'news-terms': string;
 }
 
+// Helper function to delay execution
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 async function processUser(uid: string, data: UserData[]): Promise<void> {
     try {
         const userNewsData = data
@@ -120,11 +123,26 @@ export async function sendNewsletter() {
         }
         
         const allUIDs = getAllUIDFromData(data);
-        console.log(`Processing ${allUIDs.length} users in parallel...`);
+        console.log(`Processing ${allUIDs.length} users sequentially with delays...`);
         
-        await Promise.all(
-            allUIDs.map(uid => processUser(uid, data as UserData[]))
-        );
+        // Process users sequentially with delays to avoid hitting NewsAPI rate limits
+        for (let i = 0; i < allUIDs.length; i++) {
+            const uid = allUIDs[i];
+            console.log(`Processing user ${i + 1}/${allUIDs.length}: ${uid}`);
+            
+            try {
+                await processUser(uid, data as UserData[]);
+                
+                // Add delay between users (except for the last one)
+                if (i < allUIDs.length - 1) {
+                    console.log(`Waiting 3 seconds before processing next user...`);
+                    await delay(3000);
+                }
+            } catch (error) {
+                console.error(`Failed to process user ${uid}:`, error);
+                // Continue with next user even if one fails
+            }
+        }
         
         console.log('Newsletter processing completed');
     } catch (error) {
