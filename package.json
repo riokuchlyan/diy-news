@@ -12,7 +12,10 @@
   "dependencies": {
     "@azure/communication-email": "^1.0.0",
     "@supabase/ssr": "^0.6.1",
+    "@types/cheerio": "^0.22.35",
     "@vercel/analytics": "^1.5.0",
+    "axios": "^1.11.0",
+    "cheerio": "^1.1.2",
     "next": "15.3.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
