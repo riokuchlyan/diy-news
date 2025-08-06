@@ -3,6 +3,9 @@ import { NextRequest, NextResponse } from 'next/server';
 // In-memory rate limit map: query -> last request timestamp
 const rateLimitMap: Map<string, number> = new Map();
 
+// Global rate limit to ensure we don't exceed NewsAPI's 1 request per second limit
+let lastGlobalRequest = 0;
+
 // Helper function to delay execution
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -13,18 +16,29 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Query parameter is required' }, { status: 400 });
     }
 
-    // Rate limiting: 1 request per 2 seconds per query (more conservative)
+    // Global rate limiting: ensure at least 1 second between ANY requests to NewsAPI
     const now = Date.now();
-    const lastRequest = rateLimitMap.get(query);
-    if (lastRequest && (now - lastRequest) < 2000) {
-        return NextResponse.json({
-            error: 'Rate limit exceeded. Please wait 2 seconds between requests.'
-        }, { status: 429 });
+    const timeSinceLastGlobalRequest = now - lastGlobalRequest;
+    if (timeSinceLastGlobalRequest < 1000) {
+        const waitTime = 1000 - timeSinceLastGlobalRequest;
+        console.log(`Global rate limit: waiting ${waitTime}ms before next NewsAPI request`);
+        await delay(waitTime);
     }
-    rateLimitMap.set(query, now);
+    lastGlobalRequest = Date.now();
+
+    // Per-query rate limiting: 1 request per 5 seconds per query (very conservative)
+    const lastRequest = rateLimitMap.get(query);
+    if (lastRequest && (now - lastRequest) < 5000) {
+        const waitTime = 5000 - (now - lastRequest);
+        console.log(`Query rate limit for "${query}": waiting ${waitTime}ms`);
+        await delay(waitTime);
+    }
+    rateLimitMap.set(query, Date.now());
+
+    console.log(`Making NewsAPI request for query: "${query}"`);
 
     // Retry mechanism for NewsAPI rate limits
-    const maxRetries = 3;
+    const maxRetries = 2; // Reduced retries to be more conservative
     let retryCount = 0;
 
     while (retryCount < maxRetries) {
@@ -35,7 +49,7 @@ export async function GET(request: NextRequest) {
                 // NewsAPI rate limit hit - wait and retry
                 retryCount++;
                 if (retryCount < maxRetries) {
-                    const waitTime = Math.pow(2, retryCount) * 1000; // Exponential backoff: 2s, 4s, 8s
+                    const waitTime = Math.pow(2, retryCount) * 2000; // Exponential backoff: 4s, 8s
                     console.log(`NewsAPI rate limit hit for query "${query}". Retrying in ${waitTime}ms (attempt ${retryCount}/${maxRetries})`);
                     await delay(waitTime);
                     continue;
@@ -63,6 +77,7 @@ export async function GET(request: NextRequest) {
                 }, { status: 400 });
             }
             
+            console.log(`Successfully fetched data for query: "${query}"`);
             return NextResponse.json(data);
         } catch (error) {
             console.error('Error calling NewsAPI:', error);

@@ -135,8 +135,8 @@ export async function sendNewsletter() {
                 
                 // Add delay between users (except for the last one)
                 if (i < allUIDs.length - 1) {
-                    console.log(`Waiting 3 seconds before processing next user...`);
-                    await delay(3000);
+                    console.log(`Waiting 10 seconds before processing next user...`);
+                    await delay(10000);
                 }
             } catch (error) {
                 console.error(`Failed to process user ${uid}:`, error);
