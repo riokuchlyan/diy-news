@@ -4,11 +4,6 @@ import { NextResponse } from 'next/server'
 import { validateApiRequest, isPublicApiRoute } from '@/utils/api-middleware'
 
 export async function middleware(request: NextRequest) {
-  // Skip middleware for cron jobs - they handle their own authentication
-  if (request.nextUrl.pathname.startsWith('/api/cron/')) {
-    return NextResponse.next()
-  }
-
   // Check if this is a public API route that needs API key validation
   if (isPublicApiRoute(request.nextUrl.pathname)) {
     const validationResponse = await validateApiRequest(request)
