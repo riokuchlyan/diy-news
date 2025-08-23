@@ -49,7 +49,7 @@ export default function AddNewsItems() {
     <div className="mb-8">
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="newsItems" className="block text-sm font-medium mb-2">
+          <label htmlFor="newsItems" className="block text-sm font-medium mb-2 text-white">
             Add News Items (separate by commas)
           </label>
           <textarea
@@ -57,7 +57,7 @@ export default function AddNewsItems() {
             value={newsInput}
             onChange={(e) => setNewsInput(e.target.value)}
             placeholder="tech news, world news, sports..."
-            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+            className="w-full p-2 border border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-white bg-gray-800 text-white placeholder-gray-400"
             rows={3}
           />
         </div>
@@ -67,7 +67,7 @@ export default function AddNewsItems() {
         <button
           type="submit"
           disabled={isSubmitting || !newsInput.trim()}
-          className="px-4 py-2 bg-black text-white rounded-md hover:bg-gray-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
+          className="px-4 py-2 bg-white text-black rounded-md hover:bg-gray-200 disabled:bg-gray-600 disabled:cursor-not-allowed"
         >
           {isSubmitting ? 'Adding...' : 'Add News Items'}
         </button>

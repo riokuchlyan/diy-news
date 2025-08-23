@@ -31,13 +31,13 @@ export default function NewsItem({ id, term }: NewsItemProps) {
   }
 
   return (
-    <div className="fade-in border border-gray-300 p-4 rounded-lg bg-white flex justify-between items-center">
-      <p className="text-lg">{term}</p>
+    <div className="fade-in border border-gray-600 p-4 rounded-lg bg-gray-800 flex justify-between items-center">
+      <p className="text-lg text-white">{term}</p>
       <button
         onClick={handleDelete}
         disabled={isDeleting}
-        className="ml-4 px-3 py-1 text-sm border border-black rounded-md 
-                 hover:bg-black hover:text-white transition-colors
+        className="ml-4 px-3 py-1 text-sm border border-white rounded-md text-white
+                 hover:bg-white hover:text-black transition-colors
                  disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {isDeleting ? 'Deleting...' : 'Delete'}
